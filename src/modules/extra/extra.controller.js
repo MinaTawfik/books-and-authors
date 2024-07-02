@@ -3,8 +3,10 @@ import Author from '../../../database/models/author.model.js'
 
 export const getBooksAndAuthors = async (req, res, next)=>{
     try{
-        const foundedBooks = await Book.find().select("-_id -__v -createdAt -updatedAt")
-        const foundedAuthors = await Author.find().select("-_id -__v -createdAt -updatedAt")
+        const pageNo = req.params.page
+        let perPage = 5
+        const foundedBooks = await Book.find().select("-_id -__v -createdAt -updatedAt").limit(pageNo*perPage).skip((pageNo-1)*perPage)
+        const foundedAuthors = await Author.find().select("-_id -__v -createdAt -updatedAt").limit(pageNo*perPage).skip((pageNo-1)*perPage)
         res.status(200).json({foundedBooks, foundedAuthors})
     } catch (error) {
         res.status(500).json({message: 'Internal Server Error', error})
@@ -84,60 +86,3 @@ export const getAuthorBooks = async (req, res, next)=>{
         res.status(500).json({message: 'Internal Server Error', error})
     } 
 }
-
-// export const getSpecificModels = async (req, res, next)=>{
-//     try{
-//         const models = req.query.model
-//         const foundedCars = await Car.find({name: models}).select("name model rentalStatus -_id -__v -createdAt -updatedAt")
-//         res.json(foundedCars)
-//     } catch (error) {
-//         res.json({message: 'Error detected', error})
-//     }
-// }
-
-
-// export const getSpecificAvailableModels = async (req, res, next)=>{
-//     try{
-//         const model = req.query.model
-//         const foundedCars = await Car.find({name: model, rentalStatus: "available"}).select("name model rentalStatus -_id -__v -createdAt -updatedAt")
-//         res.json(foundedCars)
-//     } catch (error) {
-//         res.json({message: 'Error detected', error})
-//     }
-// }
-
-
-// export const getRentedOrModel = async (req, res, next)=>{
-//     try{
-//         const type = req.params.type
-//         if(type=="rented"){
-//             const foundedCars = await Car.find({rentalStatus: type}).select("name model rentalStatus -_id -__v -createdAt -updatedAt")
-//             if(foundedCars.length===0){
-//                 return res.json({message: 'No cars rented'})
-//             }
-//             return res.json(foundedCars)
-//         } else {
-//             const foundedCars = await Car.find({name: type}).select("name model rentalStatus -_id -__v -createdAt -updatedAt")
-//             if(foundedCars.length===0){
-//                 return res.json({message: 'No cars for this model'})
-//             }
-//             return res.json(foundedCars)
-//         }
-//     } catch (error) {
-//         res.json({message: 'Error detected', error})
-//     }
-// }
-
-// export const getRentedOrAvailable = async (req, res, next)=>{
-//     try{
-//         const status = req.params.status
-//         const model = req.params.model
-//         const foundedCars = await Car.find({rentalStatus: status, name: model}).select("name model rentalStatus -_id -__v -createdAt -updatedAt")
-//         if(foundedCars.length===0){
-//             return res.json({message: 'No cars rented for this specific model'})
-//         }
-//         return res.json(foundedCars)
-//     } catch (error) {
-//         res.json({message: 'Error detected', error})
-//     }
-// }
